@@ -1,0 +1,14 @@
+{
+  "orgName": "Medical project scratch org",
+  "edition": "Developer",
+  "description": "This is a medical project scratch org",
+  "features": ["EnableSetPasswordInApi"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    }
+  }
+}
