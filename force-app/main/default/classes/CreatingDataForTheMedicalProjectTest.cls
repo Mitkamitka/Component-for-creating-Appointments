@@ -12,5 +12,30 @@ public class CreatingDataForTheMedicalProjectTest {
         Test.startTest();
         CreatingDataForTheMedicalProject.createMedicalData(100, 200);
         Test.stopTest();
+
+        List<Client__c> listOfClientsAndAppointments = [SELECT Name, Age__c, VIP__c, Email__c, Mobile__c, 
+                                        (SELECT Name, Client__c, Service__c, Payed__c, Date__c FROM Appointments__r) 
+                                        FROM Client__c ];
+
+        List<Client__c> listOfVIPClients = new List<Client__c>();
+        List<Client__c> listOfClientsWithMobile = new List<Client__c>();
+        List<Client__c> listOfClientsWithEmail = new List<Client__c>();
+
+        for (Client__c client: listOfClientsAndAppointments) {
+            if (client.VIP__c == true) {
+                listOfVIPClients.add(client);
+            } else if(client.Mobile__c != null) {
+                listOfClientsWithMobile.add(client);
+            } else if(client.Email__c != null) {
+                listOfClientsWithEmail.add(client);
+            } 
+            System.assert(client.Age__c <= 90 && client.Age__c >= 0);
+            System.assert(client.Appointments__r.size() >= 1);
+            for (Appointment__c appoint: client.Appointments__r) {
+                System.assert(appoint.Client__c == client.Id);
+                // System.assert(appoint.Date__c > Date.today().addDays(-61) && appoint.Date__c < Date.today().addDays(28));
+            }
+        }
+        System.assert(listOfVIPClients.size() < listOfClientsAndAppointments.size() && listOfClientsWithMobile.size() < listOfClientsAndAppointments.size() && listOfClientsWithEmail.size() < listOfClientsAndAppointments.size());
     }
 }
