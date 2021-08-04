@@ -20,13 +20,14 @@ public class CreatingDataForTheMedicalProject {
     };
     private static List<Client__c> newClientList = new List<Client__c>();
     private static List<Appointment__c> newAppointList = new List<Appointment__c>();
+    private static List<Service__c> serviceList = [SELECT Name, Price__c FROM Service__c];
     private static Map<Id, Date> datesCounter = new Map<Id, Date>();
 
-    public static Integer getMathRandom(Integer factor) {
+    private static Integer getMathRandom(Integer factor) {
         return Integer.valueOf(Math.random() * factor);
     }
     
-    public static String createMobile() {
+    private static String createMobile() {
         String nums = '1234567890';
         String randMob = '';
         while (randMob.length()<7) {
@@ -36,7 +37,7 @@ public class CreatingDataForTheMedicalProject {
         return randMob;
     }
 
-    public static void randomFillingOfMobileEmailVIP(Integer amountOfClients, Decimal percentageFraction, String fieldName) { //рандомит с заполнением полей клиентов
+    private static void randomFillingOfMobileEmailVIP(Integer amountOfClients, Decimal percentageFraction, String fieldName) { //рандомит с заполнением полей клиентов
         Integer secondFillingOfClientsCounter = 1;
         Set<Integer> unicRandomValues = new Set<Integer>();
         while (secondFillingOfClientsCounter <= Integer.valueOf(Math.round(amountOfClients * percentageFraction))) { //процент клиентов у которых заполнятся филды
@@ -59,30 +60,29 @@ public class CreatingDataForTheMedicalProject {
         }
     }
 
-    public static void createlistOfAppointments(Client__c client, Map<Integer, Service__c> mapOfServices) { 
-        Integer randomNumOfService =  getMathRandom(mapOfServices.size());
-        if (mapOfServices.containsKey(randomNumOfService)) {
-            Appointment__c newAppoint = new Appointment__c();
-            newAppoint.Name = client.Name + ' ' + mapOfServices.get(randomNumOfService).Name; 
-            newAppoint.Client__c = client.Id;
-            newAppoint.Service__c = mapOfServices.get(randomNumOfService).Id;
-            newAppoint.Payed__c = mapOfServices.get(randomNumOfService).Price__c;
-            if (client.VIP__c) {
-                newAppoint.Payed__c *= 0.8;
-            }
-            if (datesCounter.get(client.Id) == null || datesCounter.size() == 0) {
-                newAppoint.Date__c = createRandomDateWithinTwoMonths();
-                datesCounter.put(client.Id, createRandomDateWithinTwoMonths());
-            } else {
-                Date newDate = datesCounter.get(client.Id).addDays(getMathRandom(4) * 7);
-                newAppoint.Date__c = newDate;
-                datesCounter.put(client.Id, newDate);
-            }
-            newAppointList.add(newAppoint); 
-        }   
+    private static void createlistOfAppointments(Client__c client) { 
+        Integer randomNumOfService =  getMathRandom((serviceList.size()-1));
+        Appointment__c newAppoint = new Appointment__c();
+        newAppoint.Name = client.Name + ' ' + serviceList[randomNumOfService].Name; 
+        newAppoint.Client__c = client.Id;
+        newAppoint.Service__c = serviceList[randomNumOfService].Id;
+        newAppoint.Payed__c = serviceList[randomNumOfService].Price__c;
+        if (client.VIP__c) {
+            newAppoint.Payed__c *= 0.8;
+        }
+        if (datesCounter.get(client.Id) == null || datesCounter.size() == 0) {
+            newAppoint.Date__c = createRandomDateWithinTwoMonths();
+            datesCounter.put(client.Id, createRandomDateWithinTwoMonths());
+        } else {
+            Date newDate = datesCounter.get(client.Id).addDays(getMathRandom(4) * 7);
+            newAppoint.Date__c = newDate;
+            datesCounter.put(client.Id, newDate);
+        }
+        newAppointList.add(newAppoint);
+        
     }
 
-    public static Date createRandomDateWithinTwoMonths() {
+    private static Date createRandomDateWithinTwoMonths() {
         Integer randomAddDaysValue = getMathRandom(61);
         Date result = date.today().addDays(-randomAddDaysValue);
         return result;
@@ -92,8 +92,7 @@ public class CreatingDataForTheMedicalProject {
         Decimal sixtyPercentOfClientsEmailsMobiles = 0.6;
         Decimal fiftyPercentOfDiscount = 0.15;
         Set<String> setOfClientsName = new Set<String>();
-        Map<Integer, Client__c> mapOfNewClients = new Map<Integer, Client__c>();
-
+        
         while (setOfClientsName.size() != amountOfClients) {
             Client__c newClient = new Client__c();
             String clientName = firstNames.get(getMathRandom(firstNames.size())) + ' ' + lastNames.get(getMathRandom(lastNames.size()));
@@ -111,32 +110,16 @@ public class CreatingDataForTheMedicalProject {
 
         insert newClientList;
 
-        Integer counterKeyForClientsMap = 0;
         for (Client__c client: newClientList) {
-            mapOfNewClients.put(counterKeyForClientsMap, client);
-            counterKeyForClientsMap++;
+            createlistOfAppointments(client);
         }
-        
-        Map<Integer, Service__c> mapOfServices = new Map<Integer, Service__c>();
-        Integer counterKeyForServicesMap = 0;
-        for (Service__c service: [SELECT Name, Price__c FROM Service__c]) {
-            mapOfServices.put(counterKeyForServicesMap, service);
-            counterKeyForServicesMap++;
-        }
-        
-        for (Client__c client: mapOfNewClients.values()) {
-            createlistOfAppointments(client, mapOfServices);
-        }
-          
+   
         while (newAppointList.size() < amountOfAppointments) {
-            Integer randomClientIndex = getMathRandom(amountOfClients);
-            if (mapOfNewClients.containsKey(randomClientIndex)) {
-                createlistOfAppointments(mapOfNewClients.get(randomClientIndex), mapOfServices);
-            }
+            Integer randomClientIndex = getMathRandom((amountOfClients-1));
+            createlistOfAppointments(newClientList[randomClientIndex]);
         }
     
         insert newAppointList;
-        
     }
 }
 
