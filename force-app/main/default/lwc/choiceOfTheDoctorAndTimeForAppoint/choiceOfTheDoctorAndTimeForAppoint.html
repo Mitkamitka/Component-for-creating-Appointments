@@ -1,0 +1,39 @@
+<template>
+    <div class="c-container">
+        <form>
+            <lightning-combobox 
+                name="doctors"
+                label="Select the doctor"
+                value={doctorId}
+                placeholder="Select Doctor"
+                options={doctors}
+                onchange={handleDoctorChange} >
+            </lightning-combobox>
+        
+            <lightning-combobox 
+                name="date"
+                label="Select date"
+                value={dateValue}
+                placeholder="Select Date"
+                options={dates}
+                onchange={handleDateChange} >
+            </lightning-combobox>
+        
+            <lightning-combobox 
+                name="doctorsTimesheet"
+                label="Select available time"
+                value={timeValue}
+                placeholder="Select Time"
+                options={availableTime}
+                onchange={handleTimeChange} >
+            </lightning-combobox>
+            
+            <lightning-record-edit-form object-api-name="Appointment__c" onsuccess={handleSuccess} >
+                <lightning-input-field field-name='Client__c' onchange={handleClientChange}></lightning-input-field>
+                <lightning-input-field field-name='Service__c' onchange={handleServiceChange}></lightning-input-field>
+            </lightning-record-edit-form>
+            <lightning-button variant="brand" label="Save" title="New Appointment" onclick={saveNewAppointment} class="slds-m-left_x-small"></lightning-button>
+        
+        </form>
+    </div>
+</template>

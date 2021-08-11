@@ -37,5 +37,7 @@ public class CreatingDataForTheMedicalProjectTest {
             }
         }
         System.assert(listOfVIPClients.size() < listOfClientsAndAppointments.size() && listOfClientsWithMobile.size() < listOfClientsAndAppointments.size() && listOfClientsWithEmail.size() < listOfClientsAndAppointments.size());
-    }
+    } // создать докторов, у каждого должно быть свое расписание. В расписании должно быть начало работы и конец. В аппоинтменте нужно будет указывать доктора и время приема. Написать простенький компонент LWC
+    // каждый визит это один час. В этом компоненте должен быть пиклист из докторов, пиклист из дат на неделю с сегодняшнего числа. В зависимости от выбора даты должны показываться свободные времена для записи - их 
+    // вывести тоже пиклистом. 
 }

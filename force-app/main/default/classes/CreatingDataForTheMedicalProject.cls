@@ -61,7 +61,7 @@ public class CreatingDataForTheMedicalProject {
     }
 
     private static void createlistOfAppointments(Client__c client) { 
-        Integer randomNumOfService =  getMathRandom((serviceList.size()-1));
+        Integer randomNumOfService =  getMathRandom((serviceList.size() - 1));
         Appointment__c newAppoint = new Appointment__c();
         newAppoint.Name = client.Name + ' ' + serviceList[randomNumOfService].Name; 
         newAppoint.Client__c = client.Id;
@@ -122,4 +122,3 @@ public class CreatingDataForTheMedicalProject {
         insert newAppointList;
     }
 }
-
